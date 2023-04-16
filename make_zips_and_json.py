@@ -40,12 +40,12 @@ for file in z.filelist:
 
 	print("name", name)
 	with z.open(fname) as zf:
-		build_zip_path = f"build/kicad_libs_{name}-v{version}.zip"
+		build_zip_path = f"build/kicad_lib_symbols_{name}-v{version}.zip"
 		print(build_zip_path)
 		with zipfile.ZipFile(build_zip_path, 'w') as out_zip:
-			out_zip.writestr("symbols/" + name, zf.read())
+			out_zip.writestr("symbols/" + name + ".kicad_sym", zf.read())
 
-		package_index_json[f"kicad_libs_{name}"] = {
+		package_index_json[f"kicad_lib_symbols_{name}"] = {
 			"owner": "kicad_contributors",
 			"homepage": "https://github.com/danroblewis/kicad-eurorack-tools",
 			"releases": [
