@@ -4,7 +4,7 @@ import zipfile
 import io
 import shutil
 import json
-
+#import py7zr
 
 symbols_url = "https://gitlab.com/kicad/libraries/kicad-symbols/-/archive/master/kicad-symbols-master.zip"
 footprints_url = "https://gitlab.com/kicad/libraries/kicad-footprints/-/archive/master/kicad-footprints-master.zip"
@@ -30,6 +30,23 @@ os.mkdir('build')
 package_index_json = {}
 
 
+# sevenzip_filters = [{"id": py7zr.FILTER_ARM}]
+# sevenzip_filters = [{"id": py7zr.FILTER_COPY}]
+# sevenzip_filters = [{"id": py7zr.FILTER_IA64}]
+# sevenzip_filters = [{"id": py7zr.FILTER_PPMD}]
+# sevenzip_filters = [{"id": py7zr.FILTER_ARMTHUMB}]
+# sevenzip_filters = [{"id": py7zr.FILTER_CRYPTO_AES256_SHA256}]
+# sevenzip_filters = [{"id": py7zr.FILTER_LZMA}]
+# sevenzip_filters = [{"id": py7zr.FILTER_SPARC}]
+# sevenzip_filters = [{"id": py7zr.FILTER_BROTLI}]
+# sevenzip_filters = [{"id": py7zr.FILTER_DEFLATE}]
+# sevenzip_filters = [{"id": py7zr.FILTER_LZMA2}]
+# sevenzip_filters = [{"id": py7zr.FILTER_X86}]
+# sevenzip_filters = [{"id": py7zr.FILTER_BZIP2}]
+# sevenzip_filters = [{"id": py7zr.FILTER_DELTA}]
+# sevenzip_filters = [{"id": py7zr.FILTER_POWERPC}]
+# sevenzip_filters = [{"id": py7zr.FILTER_ZSTD}]
+
 
 ### Symbols
 
@@ -45,8 +62,12 @@ for file in z.filelist:
 	print(name)
 	with z.open(fname) as zf:
 		build_zip_path = f"build/kicad_lib_symbols_{name}-v{version}.zip"
-		with zipfile.ZipFile(build_zip_path, 'w') as out_zip:
+		with zipfile.ZipFile(build_zip_path, 'w', compression=zipfile.ZIP_LZMA) as out_zip:
 			out_zip.writestr("symbols/" + name + ".kicad_sym", zf.read())
+
+		# build_zip_path = f"build/kicad_lib_symbols_{name}-v{version}.7z"
+		# with py7zr.SevenZipFile(build_zip_path, 'w', filters=sevenzip_filters) as out_zip:
+		# 	out_zip.writestr(zf.read(), "symbols/" + name + ".kicad_sym")
 
 		package_index_json[f"kicad_lib_symbols_{name}"] = {
 			"owner": "kicad_contributors",
@@ -89,11 +110,18 @@ for name, files in prettyfiles.items():
 	print(name)
 
 	build_zip_path = f"build/kicad_lib_footprints_{name}-v{version}.zip"
-	with zipfile.ZipFile(build_zip_path, 'w') as out_zip:
+	with zipfile.ZipFile(build_zip_path, 'w', compression=zipfile.ZIP_LZMA) as out_zip:
 		for file in files:
 			with z.open(file) as zf:
 				parsed_file = file.replace("kicad-footprints-master/","")
 				out_zip.writestr("footprints/" + parsed_file, zf.read())
+
+	# build_zip_path = f"build/kicad_lib_footprints_{name}-v{version}.7z"
+	# with py7zr.SevenZipFile(build_zip_path, 'w', filters=sevenzip_filters) as out_zip:
+	# 	for file in files:
+	# 		with z.open(file) as zf:
+	# 			parsed_file = file.replace("kicad-footprints-master/","")
+	# 			out_zip.writestr(zf.read(), "footprints/" + parsed_file)
 
 		package_index_json[f"kicad_lib_footprints_{name}"] = {
 			"owner": "kicad_contributors",
